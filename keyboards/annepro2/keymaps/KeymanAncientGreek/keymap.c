@@ -52,18 +52,13 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    static uint16_t KC_ESCTILDE_TIMER;
     switch (keycode) {
-    case KC_ESCTILDE:
-        if (record->event.pressed) {
-            KC_ESCTILDE_TIMER = timer_read();                
-        } else {
-            if (timer_elapsed(KC_ESCTILDE_TIMER) < 200) {
-                 tap_code16(KC_ESC); 
-            } else {
+        case LT(0,KC_ESC):
+            if (!record->tap.count && record->event.pressed) {
                 SEND_STRING("~");
+                return false;
             }
-        } 
+            return true; /* Normal generation - do escape */
         return false;
         case LT(0,KC_1):
             if (!record->tap.count && record->event.pressed) {
@@ -192,13 +187,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 /*
 * Layer _BASE_LAYER
 * ,-----------------------------------------------------------------------------------------.
-* | Esc/~|  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  0  | Brve|  Crcmflx | Bksp|
+* | Esc/~|  1/ EXL | 2/@  | 3/# | 4/$ | 5/% | 6/^ | 7/& | 8/* | 9/( | 0/)|Brve|Crcmflx | Bksp|
 * |-----------------------------------------------------------------------------------------+
 * | Tab    | θ/Θ  | ω/Ω | ε/E | ρ/P | τ/T | ψ/Ψ | υ/Y | ι/I | ο/O | π/Π | [/{ |  }] |   \/ᾼ |
 * |-----------------------------------------------------------------------------------------+
 * | Caps    |  α/A  |  σ/Σ | δ/Δ | φ/Φ  | γ/Γ | η/H | ξ/Ξ  | κ/K  | λ/Λ |  ;/·  | '/" | Ent |
 * |-----------------------------------------------------------------------------------------+
-* | Shift      |  ζ/Z | χ/X  | ξ/Ξ | ν/N |  β/B |  ν/N |  μ/M |  ,/<  | ./> |  /?|  SFT/UP  |
+* | Shift      |  ζ/Z | χ/X  | ξ/Ξ | ν/N |  β/B |  ν/N |  μ/M |  ,/<  | ./> |  /?|  UP      |
 * |-----------------------------------------------------------------------------------------+
 * | Ctrl  |  Wndws  |  Alt  |               space           |  Alt  |  LEFT  |  DWN  |  RGHT|
 * \-----------------------------------------------------------------------------------------/
@@ -206,10 +201,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
  const uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  [_BASE_LAYER] = KEYMAP( /* Base */
-    KC_ESCTILDE, LT(0,KC_1), LT(0,KC_2), LT(0,KC_3), LT(0,KC_4), LT(0,KC_5), LT(0,KC_6), LT(0,KC_7), LT(0,KC_8), LT(0,KC_9), LT(0,KC_0), LT(0,KC_MINS), LT(0,KC_EQL), LT(0,KC_BSPC),
+    KC_ESCTILDE, LT(0,KC_1), LT(0,KC_2), LT(0,KC_3), LT(0,KC_4), LT(0,KC_5), LT(0,KC_6), LT(0,KC_7), LT(0,KC_8), LT(0,KC_9), LT(0,KC_0), LT(0,KC_MINS), LT(0,KC_EQL), KC_BSPC,
     TD(TD_TAB_LS1), KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, LT(0,KC_LBRC), LT(0,KC_RBRC), LT(0,KC_BSLS),
     KC_CAPS, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, LT(0,KC_SCLN), LT(0,KC_QUOT), KC_ENT,
-    KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, LT(0,KC_COMM), LT(0,KC_DOT), LT(0,KC_SLSH), RSFT_T(KC_UP),
+    KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, LT(0,KC_COMM), LT(0,KC_DOT), LT(0,KC_SLSH), KC_UP,
     KC_LCTL, KC_LGUI, TD(TD_LALT_LS4), KC_SPC, KC_RALT, KC_LEFT, KC_DOWN, KC_RGHT
 ),
 
@@ -230,7 +225,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   *
   */
  [_FN1_LAYER] = KEYMAP( /* AltGr Depressed */
-    KC_GESC, KC_NO, KC_NO, RALT(KC_3), KC_NO, KC_NO, KC_NO, KC_NO, RALT(KC_8), RALT(KC_9), RALT(KC_0), RALT(KC_MINS), RALT(KC_EQL), KC_BSPC,
+    KC_ESC, KC_NO, KC_NO, RALT(KC_3), KC_NO, KC_NO, KC_NO, KC_NO, RALT(KC_8), RALT(KC_9), RALT(KC_0), RALT(KC_MINS), RALT(KC_EQL), KC_BSPC,
     TD(TD_TAB_LS2), RALT(KC_Q), RALT(KC_W), RALT(KC_E), RALT(KC_R), RALT(KC_T), RALT(KC_Y), KC_NO, RALT(KC_I), KC_NO, RALT(KC_P), RALT(KC_LBRC), RALT(KC_RBRC), RALT(KC_BSLS),
     KC_NO, KC_NO, RALT(KC_S), RALT(KC_D), RALT(KC_F), RALT(KC_G), RALT(KC_H), RALT(KC_J), RALT(KC_K), KC_NO, KC_NO, KC_NO, KC_ENT,
     LALT(KC_LSFT), RALT(KC_Z), RALT(KC_X), RALT(KC_C), RALT(KC_V), RALT(KC_B), KC_NO, RALT(KC_M), KC_NO, KC_NO, RALT(KC_SLSH), KC_UP,
@@ -253,7 +248,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   *
   */
  [_FN2_LAYER] = KEYMAP( /* AltGr and LSFT depressed */
-    KC_GESC, KC_NO, KC_NO, RALT(LSFT(KC_3)), KC_NO, KC_NO, KC_NO, RALT(LSFT(KC_7)), KC_NO, RALT(LSFT(KC_9)), RALT(LSFT(KC_0)), RALT(LSFT(KC_MINS)), RALT(LSFT(KC_EQL)), KC_BSPC,
+    KC_ESC, KC_NO, KC_NO, RALT(LSFT(KC_3)), KC_NO, KC_NO, KC_NO, RALT(LSFT(KC_7)), KC_NO, RALT(LSFT(KC_9)), RALT(LSFT(KC_0)), RALT(LSFT(KC_MINS)), RALT(LSFT(KC_EQL)), KC_BSPC,
     TD(TD_TAB_LS3), RALT(LSFT(KC_Q)), RALT(LSFT(KC_W)), RALT(LSFT(KC_E)), RALT(LSFT(KC_R)), RALT(LSFT(KC_T)), KC_NO, RALT(LSFT(KC_U)), KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
     KC_CAPS, KC_NO, RALT(LSFT(KC_S)), RALT(LSFT(KC_D)), KC_NO, RALT(LSFT(KC_G)), RALT(LSFT(KC_H)), RALT(LSFT(KC_J)), KC_NO, KC_NO, KC_NO, KC_NO, KC_ENT,
     LALT(KC_LSFT), RALT(LSFT(KC_Z)), RALT(LSFT(KC_X)), RALT(LSFT(KC_C)), RALT(LSFT(KC_V)), KC_NO, KC_NO, RALT(LSFT(KC_M)), KC_NO, KC_NO, RALT(LSFT(KC_SLSH)), KC_UP,
@@ -275,7 +270,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   *
   */
 [_FN3_LAYER] = KEYMAP( /* Bluetooth and LED settings layer */
-   KC_GESC, KC_AP2_BT1, KC_AP2_BT2, KC_AP2_BT3, KC_AP2_BT4, KC_AP_LED_OFF, KC_AP_LED_ON, KC_AP_LED_NEXT_PROFILE, KC_AP_LED_PREV_PROFILE, KC_AP_LED_NEXT_INTENSITY, KC_AP_LED_SPEED, KC_AP2_USB, KC_AP2_BT_UNPAIR, KC_BSPC,
+   KC_ESC, KC_AP2_BT1, KC_AP2_BT2, KC_AP2_BT3, KC_AP2_BT4, KC_AP_LED_OFF, KC_AP_LED_ON, KC_AP_LED_NEXT_PROFILE, KC_AP_LED_PREV_PROFILE, KC_AP_LED_NEXT_INTENSITY, KC_AP_LED_SPEED, KC_AP2_USB, KC_AP2_BT_UNPAIR, KC_BSPC,
    TD(TD_TAB_LS3), KC_TRNS, KC_UP, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PSCR, KC_HOME, KC_END, KC_TRNS,
    KC_TRNS, KC_LEFT, KC_DOWN, KC_RGHT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PGUP, KC_PGDN, KC_ENTER,
    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_INS, KC_DEL, KC_TRNS,
@@ -301,7 +296,7 @@ void keyboard_post_init_user(void) {
 
     // Additionally, it also chooses the first LED profile by default. Refer to the "profiles" array in main.c in
     // annepro2-shine to see the order. Replace "i" with the index of your preferred profile. (i.e the RED profile is index 0)
-    annepro2LedSetProfile(1);
+    annepro2LedSetProfile(1); // NB. This appears to be non-functional since the below code overrides defaults).
 }
 
 layer_state_t layer_state_set_user(layer_state_t layer) {
