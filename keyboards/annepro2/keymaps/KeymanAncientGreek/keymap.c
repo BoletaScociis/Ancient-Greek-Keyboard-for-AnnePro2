@@ -2,10 +2,7 @@
 #include "annepro2.h"
 #include "qmk_ap2_led.h"
 #include "config.h"
-
-enum custom_keycodes {
-  KC_ESCTILDE = AP2_SAFE_RANGE
-};
+#define IS_RETRO
 
 enum anne_pro_layers {
   _BASE_LAYER,
@@ -51,15 +48,39 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 
 };
 
+bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case KC_ESC:
+            return true;
+        default:
+        return false;
+    }
+}
+
+void autoshift_press_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
+    switch(keycode) {
+        case KC_ESC:
+            register_code16((!shifted) ? KC_ESC : KC_TILD);
+            break;
+        default:
+            if (shifted) {
+            add_weak_mods(MOD_BIT(KC_LSFT));
+            }
+        register_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
+        }
+}
+
+void autoshift_release_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
+    switch(keycode) {
+        case KC_ESC:
+            unregister_code16((!shifted) ? KC_ESC : KC_TILD);
+            break;
+        default:
+            unregister_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
+            }
+        }
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        case LT(0,KC_ESC):
-            if (!record->tap.count && record->event.pressed) {
-                SEND_STRING("~");
-                return false;
-            }
-            return true; /* Normal generation - do escape */
-        return false;
         case LT(0,KC_1):
             if (!record->tap.count && record->event.pressed) {
                 tap_code16(LSFT(KC_1)); // Intercept hold function to send Lshift+1
@@ -187,7 +208,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 /*
 * Layer _BASE_LAYER
 * ,-----------------------------------------------------------------------------------------.
-* | Esc/~|  1/ EXL | 2/@  | 3/# | 4/$ | 5/% | 6/^ | 7/& | 8/* | 9/( | 0/)|Brve|Crcmflx | Bksp|
+* | Esc/~|  1   | 2    | 3   | 4   | 5   | 6   |  7   | 8   | 9  | 0 | Brve|Crcmflx | Bksp|
 * |-----------------------------------------------------------------------------------------+
 * | Tab    | θ/Θ  | ω/Ω | ε/E | ρ/P | τ/T | ψ/Ψ | υ/Y | ι/I | ο/O | π/Π | [/{ |  }] |   \/ᾼ |
 * |-----------------------------------------------------------------------------------------+
@@ -201,7 +222,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
  const uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  [_BASE_LAYER] = KEYMAP( /* Base */
-    KC_ESCTILDE, LT(0,KC_1), LT(0,KC_2), LT(0,KC_3), LT(0,KC_4), LT(0,KC_5), LT(0,KC_6), LT(0,KC_7), LT(0,KC_8), LT(0,KC_9), LT(0,KC_0), LT(0,KC_MINS), LT(0,KC_EQL), KC_BSPC,
+    KC_ESC, LT(0,KC_1), LT(0,KC_2), LT(0,KC_3), LT(0,KC_4), LT(0,KC_5), LT(0,KC_6), LT(0,KC_7), LT(0,KC_8), LT(0,KC_9), LT(0,KC_0), LT(0,KC_MINS), LT(0,KC_EQL), KC_BSPC,
     TD(TD_TAB_LS1), KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, LT(0,KC_LBRC), LT(0,KC_RBRC), LT(0,KC_BSLS),
     KC_CAPS, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, LT(0,KC_SCLN), LT(0,KC_QUOT), KC_ENT,
     KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, LT(0,KC_COMM), LT(0,KC_DOT), LT(0,KC_SLSH), KC_UP,
