@@ -59,8 +59,8 @@ bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
 
 void autoshift_press_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
     switch(keycode) {
-        case KC_ESC:
-            register_code16((!shifted) ? KC_ESC : KC_TILD);
+        case KC_GESC:
+            register_code16((!shifted) ? KC_GESC : LSFT(KC_GESC));
             break;
         default:
             if (shifted) {
@@ -72,13 +72,14 @@ void autoshift_press_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
 
 void autoshift_release_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
     switch(keycode) {
-        case KC_ESC:
-            unregister_code16((!shifted) ? KC_ESC : KC_TILD);
+        case KC_GESC:
+            unregister_code16((!shifted) ? KC_GESC : LSFT(KC_GESC));
             break;
         default:
             unregister_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
+    }
             }
-        }
+        
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case LT(0,KC_1):
@@ -222,7 +223,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
  const uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  [_BASE_LAYER] = KEYMAP( /* Base */
-    KC_ESC, LT(0,KC_1), LT(0,KC_2), LT(0,KC_3), LT(0,KC_4), LT(0,KC_5), LT(0,KC_6), LT(0,KC_7), LT(0,KC_8), LT(0,KC_9), LT(0,KC_0), LT(0,KC_MINS), LT(0,KC_EQL), KC_BSPC,
+    KC_GESC, LT(0,KC_1), LT(0,KC_2), LT(0,KC_3), LT(0,KC_4), LT(0,KC_5), LT(0,KC_6), LT(0,KC_7), LT(0,KC_8), LT(0,KC_9), LT(0,KC_0), LT(0,KC_MINS), LT(0,KC_EQL), KC_BSPC,
     TD(TD_TAB_LS1), KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, LT(0,KC_LBRC), LT(0,KC_RBRC), LT(0,KC_BSLS),
     KC_CAPS, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, LT(0,KC_SCLN), LT(0,KC_QUOT), KC_ENT,
     KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, LT(0,KC_COMM), LT(0,KC_DOT), LT(0,KC_SLSH), KC_UP,
