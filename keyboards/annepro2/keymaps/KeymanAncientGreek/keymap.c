@@ -4,6 +4,10 @@
 #include "config.h"
 #define IS_RETRO
 
+enum custom_keycodes {
+  KC_ESCTILDE = AP2_SAFE_RANGE
+};
+
 enum anne_pro_layers {
   _BASE_LAYER,
   _FN1_LAYER,
@@ -48,40 +52,14 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 
 };
 
-bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
-    switch (keycode) {
-        case KC_ESC:
-            return true;
-        default:
-        return false;
-    }
-}
-
-void autoshift_press_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
-    switch(keycode) {
-        case KC_GESC:
-            register_code16((!shifted) ? KC_GESC : LSFT(KC_GESC));
-            break;
-        default:
-            if (shifted) {
-            add_weak_mods(MOD_BIT(KC_LSFT));
-            }
-        register_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
-        }
-}
-
-void autoshift_release_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
-    switch(keycode) {
-        case KC_GESC:
-            unregister_code16((!shifted) ? KC_GESC : LSFT(KC_GESC));
-            break;
-        default:
-            unregister_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
-    }
-            }
-        
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
+        case LT(0,KC_GESC):
+            if (!record->tap.count && record->event.pressed) {
+                tap_code16(KC_TILD); // Intercept hold function to send Lshift+1
+                return false;
+        }
+            return true;             // Return true for normal processing of tap keycode
         case LT(0,KC_1):
             if (!record->tap.count && record->event.pressed) {
                 tap_code16(LSFT(KC_1)); // Intercept hold function to send Lshift+1
@@ -209,7 +187,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 /*
 * Layer _BASE_LAYER
 * ,-----------------------------------------------------------------------------------------.
-* | Esc/~|  1   | 2    | 3   | 4   | 5   | 6   |  7   | 8   | 9  | 0 | Brve|Crcmflx | Bksp|
+* | Esc/~|  1/ EXL | 2/@  | 3/# | 4/$ | 5/% | 6/^ | 7/& | 8  | 9/( | 0/)|Brve|Crcmflx | Bksp|
 * |-----------------------------------------------------------------------------------------+
 * | Tab    | θ/Θ  | ω/Ω | ε/E | ρ/P | τ/T | ψ/Ψ | υ/Y | ι/I | ο/O | π/Π | [/{ |  }] |   \/ᾼ |
 * |-----------------------------------------------------------------------------------------+
@@ -276,28 +254,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     LALT(KC_LSFT), RALT(LSFT(KC_Z)), RALT(LSFT(KC_X)), RALT(LSFT(KC_C)), RALT(LSFT(KC_V)), KC_NO, KC_NO, RALT(LSFT(KC_M)), KC_NO, KC_NO, RALT(LSFT(KC_SLSH)), KC_UP,
     KC_LCTL, KC_LGUI, KC_LALT, KC_SPC, KC_RALT, KC_LEFT, KC_DOWN, KC_RGHT
  ),
-/*
-  * Layer _FN3_LAYER 
-  * ,-----------------------------------------------------------------------------------------.
-  * |  ESC| BT1 | BT2 | BT3 | BT4 |  LEDOF |  LEDON|  LEDN |LEDP| LEDNI | LEDS |USB | UNP  |  |
-  * |-----------------------------------------------------------------------------------------+
-  * | Tab    |  q  | UP  |  e  |  r  |  t  |  y  |  u  |  i  |  o  | PS | HOME | END |   \    |
-  * |-----------------------------------------------------------------------------------------+
-  * | Esc     |LEFT |DOWN |RIGHT|  f  |  g  |  h  |  j  |  k  |  l  | PGUP|PGDN |    Enter    |
-  * |-----------------------------------------------------------------------------------------+
-  * | Shift      |  z  |  x  |  c  |  v  |  b  |  n  |  m  |  ,  |INSRT| DEL |    Shift       |
-  * |-----------------------------------------------------------------------------------------+
-  * | Ctrl  |  L1   |  Alt  |               space             |  Alt  |  FN1  |  FN2  | Ctrl  |
-  * \-----------------------------------------------------------------------------------------/
-  *
-  */
-[_FN3_LAYER] = KEYMAP( /* Bluetooth and LED settings layer */
-   KC_ESC, KC_AP2_BT1, KC_AP2_BT2, KC_AP2_BT3, KC_AP2_BT4, KC_AP_LED_OFF, KC_AP_LED_ON, KC_AP_LED_NEXT_PROFILE, KC_AP_LED_PREV_PROFILE, KC_AP_LED_NEXT_INTENSITY, KC_AP_LED_SPEED, KC_AP2_USB, KC_AP2_BT_UNPAIR, KC_BSPC,
-   TD(TD_TAB_LS3), KC_TRNS, KC_UP, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PSCR, KC_HOME, KC_END, KC_TRNS,
-   KC_TRNS, KC_LEFT, KC_DOWN, KC_RGHT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PGUP, KC_PGDN, KC_ENTER,
-   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_INS, KC_DEL, KC_TRNS,
-   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, MO(_FN1_LAYER), MO(_FN2_LAYER), KC_TRNS
-), 
 };
 const uint16_t keymaps_size = sizeof(keymaps);
 
@@ -361,16 +317,6 @@ layer_state_t layer_state_set_user(layer_state_t layer) {
       color_disabled.p.red = 0xFA; 
       color_disabled.p.green = 0x76;
       color_disabled.p.blue = 0x10;
-      color_disabled.p.alpha = 0xff; 
-      break;
-    case _FN3_LAYER:
-      color.p.red = 0xFF;
-      color.p.green = 0x00;
-      color.p.blue = 0x00;
-      color.p.alpha = 0xff;
-      color_disabled.p.red = 0; 
-      color_disabled.p.green = 0;
-      color_disabled.p.blue = 0x80;
       color_disabled.p.alpha = 0xff; 
       break;
       default:
