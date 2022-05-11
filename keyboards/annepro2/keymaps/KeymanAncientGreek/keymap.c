@@ -41,8 +41,7 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [TD_TAB_LS2] = ACTION_TAP_DANCE_LAYER_MOVE (KC_TAB, _FN2_LAYER),
     // Tap once for TAB, twice for Switch to Base Layer
     [TD_TAB_LS3] = ACTION_TAP_DANCE_LAYER_MOVE (KC_TAB, _BASE_LAYER),
-    // Tap once for LALT, twice for Switch to Layer 3
-    [TD_LALT_LS4] = ACTION_TAP_DANCE_LAYER_MOVE (KC_LALT, _FN3_LAYER),
+    
     
     
 // Each function except TD_LALT_LSS involves tapping the TAB button twice to switch layers. Tapping once functions as a regular TAB. 
@@ -54,12 +53,11 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        case LT(0,KC_GESC):
+        case LT(0,KC_ESC):
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(KC_TILD); // Intercept hold function to send Lshift+1
-                return false;
+                tap_code16(KC_TILD); // Intercept hold function to send Lshift+Εsc
+                return false;    
         }
-            return true;             // Return true for normal processing of tap keycode
         case LT(0,KC_1):
             if (!record->tap.count && record->event.pressed) {
                 tap_code16(LSFT(KC_1)); // Intercept hold function to send Lshift+1
@@ -76,7 +74,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (!record->tap.count && record->event.pressed) {
                 tap_code16(LSFT(KC_3)); // Intercept hold function to send Lshift+3
                 return false;
-        }
+        }   
             return true;             // Return true for normal processing of tap keycode
         case LT(0,KC_4):
             if (!record->tap.count && record->event.pressed) {
@@ -177,6 +175,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 tap_code16(LSFT(KC_SLSH)); // Intercept hold function to send Lshift+/
         }
             return true;             // Return true for normal processing of tap keycode
+        case LT(0, KC_F3):
+            if (!record->tap.count && record->event.pressed) {
+                tap_code16(LGUI(KC_SPC)); // Intercept hold function to send Lalt plus shift
+        }
+            return true;             // Return true for normal processing of tap keycode
+        case LT(0,KC_W):
+            if (!record->tap.count && record->event.pressed) {
+                tap_code16(KC_UP); // Intercept hold function to send Lalt plus shift
+        }
+            return true;             // Return true for normal processing of tap keycode
+        case LT(0,KC_A):
+            if (!record->tap.count && record->event.pressed) {
+                tap_code16(KC_LEFT); // Intercept hold function to send Lalt plus shift
+        }
+            return true;             // Return true for normal processing of tap keycode
+        case LT(0,KC_S):
+            if (!record->tap.count && record->event.pressed) {
+                tap_code16(KC_DOWN); // Intercept hold function to send Lalt plus shift
+        }
+            return true;             // Return true for normal processing of tap keycode
+        case LT(0,KC_D):
+            if (!record->tap.count && record->event.pressed) {
+                tap_code16(KC_RGHT); // Intercept hold function to send Lalt plus shift
+        }
+            return true;             // Return true for normal processing of tap keycode
         }
     return true;
 };
@@ -193,19 +216,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 * |-----------------------------------------------------------------------------------------+
 * | Caps    |  α/A  |  σ/Σ | δ/Δ | φ/Φ  | γ/Γ | η/H | ξ/Ξ  | κ/K  | λ/Λ |  ;/·  | '/" | Ent |
 * |-----------------------------------------------------------------------------------------+
-* | Shift      |  ζ/Z | χ/X  | ξ/Ξ | ν/N |  β/B |  ν/N |  μ/M |  ,/<  | ./> |  /?|  UP      |
+* | Shift      |  ζ/Z | χ/X  | ξ/Ξ | ν/N |  β/B |  ν/N |  μ/M |  ,/<  | ./> |  /?|  Shift   |
 * |-----------------------------------------------------------------------------------------+
-* | Ctrl  |  Wndws  |  Alt  |               space           |  Alt  |  LEFT  |  DWN  |  RGHT|
+* | Ctrl  |  Wndws  |  Alt  |               space           |  Alt  |  Lang  |  Del  |  Ctrl|
 * \-----------------------------------------------------------------------------------------/
 */
 
  const uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  [_BASE_LAYER] = KEYMAP( /* Base */
-    KC_GESC, LT(0,KC_1), LT(0,KC_2), LT(0,KC_3), LT(0,KC_4), LT(0,KC_5), LT(0,KC_6), LT(0,KC_7), LT(0,KC_8), LT(0,KC_9), LT(0,KC_0), LT(0,KC_MINS), LT(0,KC_EQL), KC_BSPC,
-    TD(TD_TAB_LS1), KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, LT(0,KC_LBRC), LT(0,KC_RBRC), LT(0,KC_BSLS),
-    KC_CAPS, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, LT(0,KC_SCLN), LT(0,KC_QUOT), KC_ENT,
-    KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, LT(0,KC_COMM), LT(0,KC_DOT), LT(0,KC_SLSH), KC_UP,
-    KC_LCTL, KC_LGUI, TD(TD_LALT_LS4), KC_SPC, KC_RALT, KC_LEFT, KC_DOWN, KC_RGHT
+    LT(0, KC_ESC), LT(0,KC_1), LT(0,KC_2), LT(0,KC_3), LT(0,KC_4), LT(0,KC_5), LT(0,KC_6), LT(0,KC_7), LT(0,KC_8), LT(0,KC_9), LT(0,KC_0), LT(0,KC_MINS), LT(0,KC_EQL), KC_BSPC,
+    TD(TD_TAB_LS1), KC_Q, LT(0, KC_W), KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, LT(0,KC_LBRC), LT(0,KC_RBRC), LT(0,KC_BSLS),
+    KC_CAPS, LT(0,KC_A), LT(0,KC_S), LT(0,KC_D), KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, LT(0,KC_SCLN), LT(0,KC_QUOT), KC_ENT,
+    KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, LT(0,KC_COMM), LT(0,KC_DOT), LT(0,KC_SLSH), KC_RSFT,
+    KC_LCTL, KC_LGUI, KC_LALT, KC_SPC, KC_RALT, LT(0, KC_F3), KC_DEL, KC_RCTL
 ),
 
   /*
@@ -215,11 +238,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   * |-----------------------------------------------------------------------------------------+
   * | Tab    |  ϑ  | ͷ  |  ϵ  |  ϱ  |  ϛ  |  ϳ   |    | ι   |     | ϖ   | ῾    | ᾿   |   ᾿    |
   * |-----------------------------------------------------------------------------------------+
-  * |     |    |   ϲ  | ͻ  |  ϕ   |  ϙ  |  ͱ  |  ϸ  |  ϰ   |    |      |      |    Enter    |
+  * |     |    |   ϲ  | ͻ  |  ϕ   |  ϙ  |  ͱ  |  ϸ  |  ϰ   |    |      |      |    Enter      |
   * |-----------------------------------------------------------------------------------------+
-  * | Shift/Alt      | ϡ | ͳ |  ϟ |  ϝ |  ϐ     |  |  ϻ  |       |     |    ´      |   UP      |
+  * | Shift/Alt      | ϡ | ͳ |  ϟ |  ϝ |  ϐ     |  |  ϻ  |       |     |    ´      |   ShiFt  |
   * |-----------------------------------------------------------------------------------------+
-  * | Ctrl  |  L1   |  Alt  |               space             |  Alt  |  LEFT  |  DWN  | RGHT  |
+  * | Ctrl  |  L1   |  Alt  |               space             |  Alt  |  Lang  |  Del  |  Ctrl|
   * \-----------------------------------------------------------------------------------------/
   * \-----------------------------------------------------------------------------------------/
   *
@@ -228,8 +251,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     KC_ESC, KC_NO, KC_NO, RALT(KC_3), KC_NO, KC_NO, KC_NO, KC_NO, RALT(KC_8), RALT(KC_9), RALT(KC_0), RALT(KC_MINS), RALT(KC_EQL), KC_BSPC,
     TD(TD_TAB_LS2), RALT(KC_Q), RALT(KC_W), RALT(KC_E), RALT(KC_R), RALT(KC_T), RALT(KC_Y), KC_NO, RALT(KC_I), KC_NO, RALT(KC_P), RALT(KC_LBRC), RALT(KC_RBRC), RALT(KC_BSLS),
     KC_NO, KC_NO, RALT(KC_S), RALT(KC_D), RALT(KC_F), RALT(KC_G), RALT(KC_H), RALT(KC_J), RALT(KC_K), KC_NO, KC_NO, KC_NO, KC_ENT,
-    LALT(KC_LSFT), RALT(KC_Z), RALT(KC_X), RALT(KC_C), RALT(KC_V), RALT(KC_B), KC_NO, RALT(KC_M), KC_NO, KC_NO, RALT(KC_SLSH), KC_UP,
-    KC_LCTL, KC_LGUI, KC_LALT, KC_SPC, KC_RALT, KC_LEFT, KC_DOWN, KC_RGHT
+    KC_LSFT, RALT(KC_Z), RALT(KC_X), RALT(KC_C), RALT(KC_V), RALT(KC_B), KC_NO, RALT(KC_M), KC_NO, KC_NO, RALT(KC_SLSH), KC_RSFT,
+    KC_LCTL, KC_LGUI, KC_LALT, KC_SPC, KC_RALT, LT(0, KC_F3), KC_DEL, KC_RCTL
  ),
 /*
   * Layer _FN2_LAYER
@@ -251,8 +274,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     KC_ESC, KC_NO, KC_NO, RALT(LSFT(KC_3)), KC_NO, KC_NO, KC_NO, RALT(LSFT(KC_7)), KC_NO, RALT(LSFT(KC_9)), RALT(LSFT(KC_0)), RALT(LSFT(KC_MINS)), RALT(LSFT(KC_EQL)), KC_BSPC,
     TD(TD_TAB_LS3), RALT(LSFT(KC_Q)), RALT(LSFT(KC_W)), RALT(LSFT(KC_E)), RALT(LSFT(KC_R)), RALT(LSFT(KC_T)), KC_NO, RALT(LSFT(KC_U)), KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
     KC_CAPS, KC_NO, RALT(LSFT(KC_S)), RALT(LSFT(KC_D)), KC_NO, RALT(LSFT(KC_G)), RALT(LSFT(KC_H)), RALT(LSFT(KC_J)), KC_NO, KC_NO, KC_NO, KC_NO, KC_ENT,
-    LALT(KC_LSFT), RALT(LSFT(KC_Z)), RALT(LSFT(KC_X)), RALT(LSFT(KC_C)), RALT(LSFT(KC_V)), KC_NO, KC_NO, RALT(LSFT(KC_M)), KC_NO, KC_NO, RALT(LSFT(KC_SLSH)), KC_UP,
-    KC_LCTL, KC_LGUI, KC_LALT, KC_SPC, KC_RALT, KC_LEFT, KC_DOWN, KC_RGHT
+    LALT(KC_LSFT), RALT(LSFT(KC_Z)), RALT(LSFT(KC_X)), RALT(LSFT(KC_C)), RALT(LSFT(KC_V)), KC_NO, KC_NO, RALT(LSFT(KC_M)), KC_NO, KC_NO, RALT(LSFT(KC_SLSH)), KC_RSFT,
+    KC_LCTL, KC_LGUI, KC_LALT, KC_SPC, KC_RALT, LT(0, KC_F3), KC_DEL, KC_RCTL
  ),
 };
 const uint16_t keymaps_size = sizeof(keymaps);
