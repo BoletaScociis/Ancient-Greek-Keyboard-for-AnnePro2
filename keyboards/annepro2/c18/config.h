@@ -85,8 +85,8 @@
 #define HT32_SPI_USE_SPI1 TRUE
 #define HT32_SPI1_IRQ_PRIORITY 9
 #endif
-// Default LED brightness
-#define RGB_MATRIX_MAXIMUM_BRIGHTNESS 120
+
+#define RGB_MATRIX_MAXIMUM_BRIGHTNESS 150
 
 /* number of backlight levels */
 // #define BACKLIGHT_LEVELS 10
